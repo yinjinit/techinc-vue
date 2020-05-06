@@ -1,11 +1,6 @@
 import Vue from "vue";
 import Vuetify from "vuetify/lib";
-import { dark } from "./theme";
 
 Vue.use(Vuetify);
 
-export default new Vuetify({
-  theme: {
-    themes: { dark },
-  },
-});
+export default new Vuetify({});

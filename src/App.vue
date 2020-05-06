@@ -1,6 +1,7 @@
 <style lang="scss">
 $list-border-radius: 0;
 $list-dense-content-padding: 0;
+@import '@/styles/variables.scss';
 
 #nav-drawer {
   background-image: url("./assets/bgPattern.png");
