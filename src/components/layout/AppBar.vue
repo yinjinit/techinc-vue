@@ -11,29 +11,11 @@
       @click="setDrawer(!drawer)"
     />
 
-    <v-breadcrumbs :items="crumbs">
-      <template v-slot:divider>
-        <v-icon>mdi-chevron-right</v-icon>
-      </template>
-      <template v-slot:item="{ item }">
-        <v-breadcrumbs-item
-          :href="item.href"
-          :disabled="item.disabled"
-        >
-          {{ item.text.toUpperCase() }}
-        </v-breadcrumbs-item>
-      </template>
-    </v-breadcrumbs>
+    <v-toolbar-title>
+      <span class="hidden-sm-and-down">{{ this.$t('author') }}</span>
+    </v-toolbar-title>
 
     <v-spacer />
-
-    <v-btn
-      class="ml-2"
-      min-width="0"
-      text
-    >
-      <v-icon>mdi-message-alert</v-icon>
-    </v-btn>
 
     <v-menu
       bottom
@@ -44,8 +26,37 @@
     >
       <template v-slot:activator="{ attrs, on }">
         <v-btn
-          class="ml-2"
-          min-width="0"
+          text
+          v-bind="attrs"
+          v-on="on"
+        >
+          <v-icon>mdi-message-alert</v-icon>
+        </v-btn>
+      </template>
+
+      <v-list
+        :tile="true"
+        nav
+      >
+        <div>
+          <app-bar-item
+            v-for="(n, i) in notifications"
+            :key="`item-${i}`"
+          >
+            <v-list-item-title v-text="n" />
+          </app-bar-item>
+        </div>
+      </v-list>
+    </v-menu>
+    <v-menu
+      bottom
+      left
+      offset-y
+      origin="top right"
+      transition="scale-transition"
+    >
+      <template v-slot:activator="{ attrs, on }">
+        <v-btn
           text
           v-bind="attrs"
           v-on="on"
@@ -78,15 +89,37 @@
         </div>
       </v-list>
     </v-menu>
-
-    <v-btn
-      class="ml-2"
-      min-width="0"
-      text
-      to="/pages/user"
+    <v-menu
+      bottom
+      left
+      offset-y
+      origin="top right"
+      transition="scale-transition"
     >
-      <v-icon>mdi-account</v-icon>
-    </v-btn>
+      <template v-slot:activator="{ attrs, on }">
+        <v-btn
+          text
+          v-bind="attrs"
+          v-on="on"
+        >
+          <v-icon>mdi-account</v-icon>
+        </v-btn>
+      </template>
+
+      <v-list
+        :tile="false"
+        nav
+      >
+        <div>
+          <app-bar-item
+            v-for="(n, i) in notifications"
+            :key="`item-${i}`"
+          >
+            <v-list-item-title v-text="n" />
+          </app-bar-item>
+        </div>
+      </v-list>
+    </v-menu>
   </v-app-bar>
 </template>
 
@@ -99,7 +132,6 @@
 
   export default {
     name: 'DashboardCoreAppBar',
-
     components: {
       AppBarItem: {
         render (h) {
@@ -132,34 +164,9 @@
       },
     },
     data: () => ({
-      notifications: [
-        'Mike John Responded to your email',
-        'You have 5 new tasks',
-        'You\'re now friends with Andrew',
-        'Another Notification',
-        'Another one',
-      ],
     }),
     computed: {
-      ...mapState(['drawer']),
-      crumbs () {
-        const breadcrumbs = this.$route.path.split('/')
-          .filter(p => p !== '')
-          .reduce((breadcrumbArray, path, idx) => {
-            breadcrumbArray.push({
-              href: breadcrumbArray[idx - 1]
-                ? '/' + breadcrumbArray[idx - 1].href + '/' + path
-                : '/' + path,
-              text: this.$route.matched[idx].meta.breadCrumb || path,
-            })
-            return breadcrumbArray
-          }, [{
-            href: '/',
-            text: this.$t('author'),
-          }])
-        breadcrumbs[breadcrumbs.length - 1].disabled = true
-        return breadcrumbs
-      },
+      ...mapState(['drawer', 'notifications']),
     },
     methods: {
       ...mapMutations({
