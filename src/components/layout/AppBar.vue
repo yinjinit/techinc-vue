@@ -18,35 +18,76 @@
     <v-spacer />
 
     <v-menu
+      v-model="openFeedback"
       bottom
       left
       offset-y
       origin="top right"
       transition="scale-transition"
+      :close-on-content-click="false"
     >
-      <template v-slot:activator="{ attrs, on }">
+      <template v-slot:activator="{ on }">
         <v-btn
-          text
-          v-bind="attrs"
+          fab
+          x-small
           v-on="on"
         >
           <v-icon>mdi-message-alert</v-icon>
         </v-btn>
       </template>
 
-      <v-list
-        :tile="true"
-        nav
-      >
-        <div>
-          <app-bar-item
-            v-for="(n, i) in notifications"
-            :key="`item-${i}`"
+      <v-card>
+        <v-card-title class="grey lighten-4 font-weight-bold">
+          {{ $t('feedback') }}
+        </v-card-title>
+
+        <v-divider />
+
+        <v-card-text>
+          <v-form
+            ref="form"
+            v-model="valid"
           >
-            <v-list-item-title v-text="n" />
-          </app-bar-item>
-        </div>
-      </v-list>
+            <v-text-field
+              v-model="subject"
+              :rules="subjectRules"
+              :label="$t('subject')"
+              :placeholder="$t('write your subject')"
+              required
+            />
+
+            <v-text-field
+              v-model="msg"
+              :rules="msgRules"
+              :label="$t('message')"
+              :placeholder="$t('write your message')"
+              required
+            />
+
+            <v-checkbox
+              v-model="snapshot"
+              :label="$t('include a snapshot of the current page')"
+            />
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+
+          <v-btn
+            text
+            @click="reset"
+          >
+            {{ $t('cancel') }}
+          </v-btn>
+          <v-btn
+            color="primary"
+            text
+            @click="submit"
+          >
+            {{ $t('submit') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
     </v-menu>
     <v-menu
       bottom
@@ -57,7 +98,8 @@
     >
       <template v-slot:activator="{ attrs, on }">
         <v-btn
-          text
+          fab
+          x-small
           v-bind="attrs"
           v-on="on"
         >
@@ -75,18 +117,21 @@
         </v-btn>
       </template>
 
-      <v-list
-        :tile="false"
-        nav
-      >
-        <div>
+      <v-list dense>
+        <v-subheader class="v-subheader grey lighten-4 font-weight-bold">
+          {{ $t('notifications') }}
+        </v-subheader>
+
+        <v-divider />
+
+        <v-list-item-group color="primary">
           <app-bar-item
             v-for="(n, i) in notifications"
             :key="`item-${i}`"
           >
             <v-list-item-title v-text="n" />
           </app-bar-item>
-        </div>
+        </v-list-item-group>
       </v-list>
     </v-menu>
     <v-menu
@@ -99,25 +144,35 @@
       <template v-slot:activator="{ attrs, on }">
         <v-btn
           text
+          small
           v-bind="attrs"
           v-on="on"
         >
           <v-icon>mdi-account</v-icon>
+          <span>John Leider: No Country</span>
         </v-btn>
       </template>
-
       <v-list
-        :tile="false"
-        nav
+        dense
       >
-        <div>
-          <app-bar-item
-            v-for="(n, i) in notifications"
-            :key="`item-${i}`"
-          >
-            <v-list-item-title v-text="n" />
-          </app-bar-item>
-        </div>
+        <v-subheader class="v-subheader grey lighten-4 font-weight-bold">
+          {{ $t('user settings') }}
+        </v-subheader>
+
+        <v-divider />
+
+        <app-bar-item>
+          <v-icon style="margin-right: 10px;">
+            mdi-account
+          </v-icon>
+          <v-list-item-title v-text="$t('my profile')" />
+        </app-bar-item>
+        <app-bar-item>
+          <v-icon style="margin-right: 10px;">
+            mdi-logout
+          </v-icon>
+          <v-list-item-title v-text="$t('logout')" />
+        </app-bar-item>
       </v-list>
     </v-menu>
   </v-app-bar>
@@ -164,6 +219,17 @@
       },
     },
     data: () => ({
+      valid: true,
+      subject: '',
+      subjectRules: [
+        v => !!v || 'Subject is required',
+      ],
+      msg: '',
+      msgRules: [
+        v => !!v || 'Subject is required',
+      ],
+      snapshot: false,
+      openFeedback: false,
     }),
     computed: {
       ...mapState(['drawer', 'notifications']),
@@ -172,6 +238,30 @@
       ...mapMutations({
         setDrawer: 'SET_DRAWER',
       }),
+      reset () {
+        this.openFeedback = false
+        this.$refs.form.reset()
+      },
+      submit () {
+        this.openFeedback = false
+        this.$refs.form.reset()
+      },
     },
   }
 </script>
+
+<style lang="scss">
+  .v-menu__content {
+    .v-card__title {
+      line-height: 1.5;
+      padding: 0 16px;
+      font-size: 0.75rem;
+      height: 40px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    .v-subheader {
+      padding: 0 16px;
+    }
+  }
+</style>

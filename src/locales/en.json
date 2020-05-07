@@ -13,6 +13,21 @@
   "work request": "Work Request",
   "users": "Users",
   "asset": "Asset",
-  "structure": "Structure"
+  "structure": "Structure",
+  "notifications": "Notifications",
+  "my profile": "My Profile",
+  "cancel": "Cancel",
+  "submit": "Submit",
+  "subject": "Subject",
+  "write your subject": "Write your subject",
+  "message": "Message",
+  "write your message": "Write your message",
+  "feedback": "Feedback",
+  "include a snapshot of the current page": "Include a snapshot of the current page",
+  "no recent notifications": "No Recent Notifications",
+  "notification page": "Notification page",
+  "login": "Login",
+  "logout": "Logout",
+  "user settings": "User Settings"
 }
   

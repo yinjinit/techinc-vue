@@ -13,7 +13,7 @@ export default new VueRouter({
       component: () => import('@/views/Index'),
       children: [
         {
-          name: 'Dashboard',
+          name: 'My Dashboard',
           path: 'dashboard',
           component: () => import('@/views/dashboard/Dashboard'),
         },
