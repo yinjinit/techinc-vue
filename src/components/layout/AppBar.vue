@@ -105,7 +105,6 @@
         >
           <v-badge
             color="red"
-            overlap
             bordered
           >
             <template v-slot:badge>

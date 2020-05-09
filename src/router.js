@@ -15,7 +15,7 @@ export default new VueRouter({
         {
           name: 'My Dashboard',
           path: 'dashboard',
-          component: () => import('@/views/dashboard/Dashboard'),
+          component: () => import('@/views/dashboard/MyDashboard'),
         },
         {
           name: 'Live Dashboard',

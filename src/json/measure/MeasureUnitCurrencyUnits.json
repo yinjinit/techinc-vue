@@ -1,0 +1,1 @@
+[{"Id":16,"Description":"AUD","Key":"aud","Factor":0.67,"Dimension":{"Id":15,"Description":"Currency","Key":"currency"}},{"Id":17,"Description":"USD","Key":"usd","Factor":1.0,"Dimension":{"Id":15,"Description":"Currency","Key":"currency"}}]
