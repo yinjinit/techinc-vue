@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   viewBox="0 0 1024 1024"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="key.svg">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1440"
+     inkscape:window-height="897"
+     id="namedview6"
+     showgrid="false"
+     inkscape:zoom="0.23046875"
+     inkscape:cx="512"
+     inkscape:cy="512"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <path
+     d="M994.528 317.31l-99.537-99.535c-24.407-24.409-64.356-64.354-88.763-88.765l-99.537-99.535c-24.407-24.409-67.884-28.714-96.608-9.565l-272.149 181.433c-28.723 19.15-39.594 60.081-24.155 90.957l69.392 138.787c2.121 4.239 4.574 8.758 7.275 13.448l-350.999 350.999-31.504 220.525h189.021v-63.007h126.014v-126.014h126.014v-126.014h126.014v-70.082c6.297 3.753 12.34 7.104 17.91 9.888l138.783 69.394c30.879 15.439 71.808 4.566 90.957-24.157l181.435-272.151c19.152-28.719 14.844-72.192-9.563-96.604zm-838.293 532l-44.552-44.552 306.738-306.736 44.552 44.552-306.738 306.736zm754.501-424.177l-44.554 44.554c-12.253 12.251-32.299 12.251-44.552 0l-267.317-267.317c-12.253-12.251-12.253-32.301 0-44.552l44.554-44.554c12.253-12.251 32.299-12.251 44.552 0l267.317 267.317c12.253 12.251 12.253 32.301 0 44.552z"
+     id="path4"
+     style="fill:#626564;fill-opacity:1" />
+</svg>
