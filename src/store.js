@@ -5,13 +5,18 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    user: 1,
     drawer: null,
-    showTimeExt: false,
-    timeRange: {
-      startDate: '2020-05-01',
-      startTime: '00:00',
-      endDate: '2020-05-08',
-      endTime: '00:00',
+    myDashboard: {
+      showTimeExt: false,
+      timeRange: {
+        start: undefined,
+        end: undefined,
+      },
+      region: [],
+      site: [],
+      structure: [],
+      layout: [],
     },
     notifications: [
       'Mike John Responded to your email',
@@ -28,11 +33,14 @@ export default new Vuex.Store({
     SET_NOTIFICATIONS (state, payload) {
       state.notifications = payload
     },
-    SET_TIMEEXT (state, payload) {
-      state.showTimeExt = payload
-    },
     SET_TIMERANGE (state, payload) {
-      state.timeRange = payload
+      state.myDashboard.timeRange = payload
+    },
+    TOGGLE_TIMEEXT (state, payload) {
+      state.myDashboard.showTimeExt = payload
+    },
+    SET_LAYOUT (state, payload) {
+      state.myDashboard.layout = payload
     },
   },
   actions: {},
