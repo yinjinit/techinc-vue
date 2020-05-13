@@ -73,8 +73,16 @@
           group: '',
           children: [
             { title: 'my dashboard', icon: 'mdi-chart-bar', to: 'dashboard' },
-            { title: 'live dashboard', icon: 'mdi-antenna', to: 'dashboard/live' },
-            { title: 'slideshow', icon: 'mdi-play-box-outline', to: 'dashboard/slideshow' },
+            {
+              title: 'live dashboard',
+              icon: 'mdi-antenna',
+              to: 'dashboard/live',
+            },
+            {
+              title: 'slideshow',
+              icon: 'mdi-play-box-outline',
+              to: 'dashboard/slideshow',
+            },
           ],
         },
         {
@@ -82,8 +90,16 @@
           icon: 'mdi-clock-outline',
           group: '',
           children: [
-            { title: 'reconciliation', icon: 'mdi-scale-balance', to: 'time/reconciliation' },
-            { title: 'downtime stopwatch', icon: 'mdi-alarm', to: 'time/downtime' },
+            {
+              title: 'reconciliation',
+              icon: 'mdi-scale-balance',
+              to: 'time/reconciliation',
+            },
+            {
+              title: 'downtime stopwatch',
+              icon: 'mdi-alarm',
+              to: 'time/downtime',
+            },
           ],
         },
         {
@@ -91,7 +107,11 @@
           icon: 'mdi-wrench-outline',
           group: '',
           children: [
-            { title: 'work request', icon: 'mdi-water', to: 'maintenance/work-request' },
+            {
+              title: 'work request',
+              icon: 'mdi-water',
+              to: 'maintenance/work-request',
+            },
           ],
         },
         {
@@ -99,9 +119,17 @@
           icon: 'mdi-cog-outline',
           group: '',
           children: [
-            { title: 'users', icon: 'mdi-account-multiple', to: 'settings/users' },
+            {
+              title: 'users',
+              icon: 'mdi-account-multiple',
+              to: 'settings/users',
+            },
             { title: 'asset', icon: 'mdi-factory', to: 'settings/asset' },
-            { title: 'structure', icon: 'mdi-file-tree', to: 'settings/structure' },
+            {
+              title: 'structure',
+              icon: 'mdi-file-tree',
+              to: 'settings/structure',
+            },
           ],
         },
       ],
@@ -133,21 +161,21 @@
 </script>
 
 <style lang="scss">
-  #nav-drawer {
-    .v-list-item__action {
-      .v-icon:hover:after {
-        opacity: .24;
-      }
-    }
-
-    .v-list-group__header.v-list-item--active:before {
-      opacity: .24;
-    }
-
-    .v-list-group__items {
-      background-color: rgba(150, 150, 150, .2);
-      border-radius: $border-radius-root;
-      margin-bottom: 4px;
+#nav-drawer {
+  .v-list-item__action {
+    .v-icon:hover:after {
+      opacity: 0.24;
     }
   }
+
+  .v-list-group__header.v-list-item--active:before {
+    opacity: 0.24;
+  }
+
+  .v-list-group__items {
+    background-color: rgba(150, 150, 150, 0.2);
+    border-radius: $border-radius-root;
+    margin-bottom: 4px;
+  }
+}
 </style>

@@ -4,12 +4,12 @@
       :ref="randDateRef"
       v-model="menuDate"
       :close-on-content-click="false"
-      :return-value.sync="dateVal"
+      :return-value.sync="dateData"
       offset-y
     >
       <template v-slot:activator="{ on }">
         <v-text-field
-          v-model="dateVal"
+          v-model="dateData"
           append-icon="event"
           dense
           outlined
@@ -20,7 +20,7 @@
         />
       </template>
       <v-date-picker
-        v-model="dateVal"
+        v-model="dateData"
         no-title
         scrollable
         :min="minDate"
@@ -36,42 +36,42 @@
         <v-btn
           text
           color="primary"
-          @click="updateDate(dateVal)"
+          @click="$refs[randDateRef].save(dateData)"
         >
           {{ $t('ok') }}
         </v-btn>
       </v-date-picker>
     </v-menu>
     <v-menu
-      v-if="time !== undefined"
+      v-if="timeData !== undefined"
       :ref="randTimeRef"
       v-model="menuTime"
       :close-on-content-click="false"
-      :return-value.sync="timeVal"
+      :return-value.sync="timeData"
       transition="scale-transition"
       offset-y
-      min-width="290px"
+      min-width="240px"
     >
       <template v-slot:activator="{ on }">
         <v-text-field
-          v-model="timeVal"
+          v-model="timeData"
           append-icon="access_time"
           filled
           outlined
           hide-details
           :rules="[rules.time]"
-          class="base-time-picker"
+          class="base-time-picker ml-1"
           v-on="on"
         />
       </template>
       <v-time-picker
         v-if="menuTime"
-        v-model="timeVal"
+        v-model="timeData"
         full-width
         format="24hr"
-        :min="minDate==dateVal ? minTime : undefined"
-        :max="maxDate==dateVal ? maxTime : undefined"
-        @click:minute="updateTime(timeVal)"
+        :min="minDate==dateData ? minTime : undefined"
+        :max="maxDate==dateData ? maxTime : undefined"
+        @click:minute="$refs[randTimeRef].save(timeData)"
       />
     </v-menu>
   </div>
@@ -81,28 +81,16 @@
   export default {
     name: 'DateTimePicker',
     props: {
-      date: {
-        type: String,
+      datetime: {
+        type: Date,
         default: undefined,
       },
-      time: {
-        type: String,
+      min: {
+        type: Date,
         default: undefined,
       },
-      minDate: {
-        type: String,
-        default: undefined,
-      },
-      minTime: {
-        type: String,
-        default: undefined,
-      },
-      maxDate: {
-        type: String,
-        default: undefined,
-      },
-      maxTime: {
-        type: String,
+      max: {
+        type: Date,
         default: undefined,
       },
     },
@@ -119,29 +107,57 @@
           return pattern.test(v)
         },
       },
-      dateVal: undefined,
-      timeVal: undefined,
     }),
     computed: {
       randDateRef () {
-        return Math.random().toString(10).substr(2)
+        return 'dateTimePicker-' + Math.random().toString(16).substr(2, 9)
       },
       randTimeRef () {
-        return Math.random().toString(10).substr(2)
+        return 'dateTimePicker-' + Math.random().toString(16).substr(2, 9)
+      },
+      minDate () {
+        return this.min !== undefined ? this.getDate(this.min) : undefined
+      },
+      maxDate () {
+        return this.max !== undefined ? this.getDate(this.max) : undefined
+      },
+      minTime () {
+        return this.min !== undefined ? this.getTime(this.min) : undefined
+      },
+      maxTime () {
+        return this.max !== undefined ? this.getTime(this.max) : undefined
+      },
+      dateData: {
+        get () {
+          return this.getDate(this.datetime)
+        },
+        set (val) {
+          this.$emit('update:datetime', new Date(val + ' ' + this.timeData))
+        },
+      },
+      timeData: {
+        get () {
+          return this.getTime(this.datetime)
+        },
+        set (val) {
+          this.$emit('update:datetime', new Date(this.dateData + ' ' + val))
+        },
       },
     },
-    created () {
-      this.dateVal = this.date
-      this.timeVal = this.time
+    mounted () {
+      this.dateData = this.getDate(this.datetime)
+      this.timeData = this.getTime(this.datetime)
     },
+
     methods: {
-      updateDate (val) {
-        this.$refs[this.randDateRef].save(val)
-        this.$emit('update:date', val)
+      getDate (val) {
+        return val.getFullYear() +
+          '-' + ('0' + (val.getMonth() + 1)).slice(-2) +
+          '-' + ('0' + val.getDate()).slice(-2)
       },
-      updateTime (val) {
-        this.$refs[this.randTimeRef].save(val)
-        this.$emit('update:time', val)
+      getTime (val) {
+        return ('0' + val.getHours()).slice(-2) +
+          ':' + ('0' + val.getMinutes()).slice(-2)
       },
     },
   }
@@ -172,7 +188,6 @@
 
   .base-time-picker.v-text-field {
     max-width: 90px;
-    margin-left: 4px;
 
     .v-input__control {
       .v-input__slot {
