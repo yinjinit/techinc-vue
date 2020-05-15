@@ -104,6 +104,9 @@
           </div>
           <component
             :is="`Visual${item.vis}`"
+            :ref="widgets[item.category].Widgets[item.ind]
+              .Selector.split('#')[1] +
+              '-widget-' + widgets[item.category].Widgets[item.ind].WidgetId"
             :widget="widgets[item.category].Widgets[item.ind]"
           />
         </grid-item>
@@ -239,8 +242,12 @@
           }
         })
       },
-      resizedEvent () {
-        this.$forceUpdate()
+      resizedEvent (i) {
+        const item = this.layout.filter(l => l.i === i)[0]
+        const widget = this.widgets[item.category].Widgets[item.ind]
+        const ref = widget.Selector.split('#')[1] +
+          '-widget-' + widget.WidgetId
+        setTimeout(() => this.$refs[ref][0].handleResize(), 400)
       },
     },
   }
