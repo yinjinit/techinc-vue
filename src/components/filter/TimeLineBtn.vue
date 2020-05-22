@@ -2,6 +2,7 @@
   <v-btn
     small
     v-bind="$attrs"
+    :disabled="!timeRange.start"
     @click="showTimeExt = !showTimeExt"
   >
     <v-icon left>
@@ -17,33 +18,36 @@
 <script>
   export default {
     name: 'TimeLineBtn',
-    props: {
-      timeRange: {
-        type: Object,
-        default: () => ({
-          start: undefined,
-          end: undefined,
-        }),
-      },
-    },
+    data: () => ({
+    }),
     computed: {
+      timeRange: {
+        get () {
+          return this.$store.state[this.$route.name].timeRange
+        },
+      },
       showTimeExt: {
         get () {
-          return this.$store.state.myDashboard.showTimeExt
+          return this.$store.state[this.$route.name].showTimeExt
         },
         set (val) {
-          this.$store.commit('TOGGLE_TIMEEXT', val)
+          const name = this.$route.name
+          this.$store.commit('TOGGLE_TIMEEXT', { name, val })
         },
       },
     },
     methods: {
       timeRangeTxt () {
-        return this.timeRange.start.getFullYear() +
-          '-' + ('0' + (this.timeRange.start.getMonth() + 1)).slice(-2) +
-          '-' + ('0' + this.timeRange.start.getDate()).slice(-2) +
-          ' ~ ' + this.timeRange.end.getFullYear() +
-          '-' + ('0' + (this.timeRange.end.getMonth() + 1)).slice(-2) +
-          '-' + ('0' + this.timeRange.end.getDate()).slice(-2)
+        if (this.timeRange.start) {
+          return this.timeRange.start.getFullYear() +
+            '-' + ('0' + (this.timeRange.start.getMonth() + 1)).slice(-2) +
+            '-' + ('0' + this.timeRange.start.getDate()).slice(-2) +
+            ' ~ ' + this.timeRange.end.getFullYear() +
+            '-' + ('0' + (this.timeRange.end.getMonth() + 1)).slice(-2) +
+            '-' + ('0' + this.timeRange.end.getDate()).slice(-2)
+        }
+
+        return 'All'
       },
     },
   }

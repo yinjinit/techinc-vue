@@ -7,9 +7,17 @@ import i18n from './i18n'
 import axios from 'axios'
 import './plugins/base'
 import './services/mock'
-import resize from 'vue-element-resize-detector'
+import * as VueGoogleMaps from 'vue2-google-maps'
 
 Vue.config.productionTip = false
+
+Vue.use(VueGoogleMaps, {
+  load: {
+    key: 'AIzaSyCSVxstLlVUrrzSNSbZbp-646V3w8TH6PM',
+    libraries: 'places,drawing,visualization',
+    installComponents: true,
+  },
+})
 
 new Vue({
   vuetify,
@@ -17,6 +25,5 @@ new Vue({
   store,
   i18n,
   axios,
-  resize,
   render: h => h(App),
 }).$mount('#app')

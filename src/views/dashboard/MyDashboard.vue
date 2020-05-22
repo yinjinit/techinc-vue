@@ -9,44 +9,26 @@
     />
 
     <fragment v-else>
-      <v-card
-        outlined
-        color="grey lighten-2"
+      <v-toolbar
+        flat
+        tag="div"
       >
-        <v-toolbar
-          flat
-          tag="div"
-          color="rgba(0,0,0,0)"
-        >
-          <time-line-btn
-            :time-range="timeRange"
-            class="mr-1"
-          />
-          <base-dropdown
-            :items="['item1', 'item2', 'item3']"
-            title="Region"
-            class-name="mr-1"
-          />
-          <base-dropdown
-            :items="['item1', 'item2', 'item3']"
-            title="Site"
-            class-name="mr-1"
-          />
-          <base-dropdown
-            :items="['item1', 'item2', 'item3']"
-            title="Structure Type"
-          />
-        </v-toolbar>
-        <time-line-ext
-          v-if="showTimeExt"
-          :time-range="timeRange"
-          @update:timeRange="updateTimeRange($event)"
+        <time-line-btn class="mr-1" />
+        <base-dropdown
+          v-for="(filter, key, i) in filters"
+          :key="i"
+          :items="filter"
+          :disabled="!Object.keys(filter).length"
+          :title="key"
+          class-name="mr-1"
+          @update:dropdown="updateDropdown(key, $event)"
         />
-      </v-card>
+      </v-toolbar>
+      <time-line-ext v-if="showTimeExt" />
 
       <v-toolbar
-        color="rgba(0,0,0,0)"
         flat
+        tag="div"
       >
         <v-toolbar-title>{{ $route.name }}</v-toolbar-title>
 
@@ -62,55 +44,68 @@
           </v-icon>
           <span>{{ $t('export to csv') }}</span>
         </v-btn>
-        <btn-add-widget
-          :widgets-grouped="widgets"
-          @add:widget="addWidget($event)"
-        />
+        <v-btn
+          small
+          color="primary"
+          @click.stop="drawer = !drawer"
+        >
+          <v-icon left>
+            mdi-plus-thick
+          </v-icon>
+          <span>{{ $t('add widget') }}</span>
+        </v-btn>
       </v-toolbar>
 
       <v-divider />
 
-      <grid-layout
-        :layout.sync="layout"
-        :col-num="12"
-        :row-height="30"
-        :is-draggable="true"
-        :is-resizable="true"
-        :is-mirrored="false"
-        :vertical-compact="true"
-        :margin="[10, 10]"
-        :use-css-transforms="true"
+      <v-navigation-drawer
+        v-model="drawer"
+        fixed
+        right
+        temporary
+        tag="nav"
       >
-        <grid-item
-          v-for="item in layout"
-          :key="item.i"
-          :x="item.x"
-          :y="item.y"
-          :w="item.w"
-          :h="item.h"
-          :i="item.i"
-          drag-allow-from=".grid-item--title"
-          drag-ignore-from=".grid-item--title + *"
-          @resized="resizedEvent"
+        <v-list
+          dense
+          nav
         >
-          <div class="grid-item--title">
-            {{ widgets[item.category].Widgets[item.ind].Description }}
-            <v-icon
-              small
-              @click="removeWidget(item.i)"
-            >
-              mdi-close
-            </v-icon>
-          </div>
-          <component
-            :is="`Visual${item.vis}`"
-            :ref="widgets[item.category].Widgets[item.ind]
-              .Selector.split('#')[1] +
-              '-widget-' + widgets[item.category].Widgets[item.ind].WidgetId"
-            :widget="widgets[item.category].Widgets[item.ind]"
-          />
-        </grid-item>
-      </grid-layout>
+          <v-list-group
+            v-for="cate in widgets"
+            :key="cate.Id"
+          >
+            <template v-slot:activator>
+              <v-list-item-content>
+                <v-list-item-title v-text="cate.Description.toUpperCase()" />
+              </v-list-item-content>
+            </template>
+            <template v-for="(wg, i) in cate.Widgets">
+              <v-list-item
+                v-if="!wg.Hidden"
+                :key="i"
+                three-line
+                :disabled="wg.Description !== 'Payload Summary'"
+                @click="addWidget(cate.Id, i)"
+              >
+                <v-list-item-content>
+                  <v-list-item-title>
+                    {{ wg.Description }}
+                  </v-list-item-title>
+                  <v-list-item-subtitle>
+                    {{ wg.DescriptionLong }}
+                  </v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </template>
+          </v-list-group>
+        </v-list>
+      </v-navigation-drawer>
+
+      <grid-manager
+        ref="gridManager"
+        :widgets="widgets"
+        :time-range="timeRange"
+        :filters="filters"
+      />
     </fragment>
   </v-container>
 </template>
@@ -118,63 +113,42 @@
 <script>
   import { mapState } from 'vuex'
   import DatasetDashboardApi from '@/services/api/DatasetDashboard'
-  import VueGridLayout from 'vue-grid-layout'
 
   export default {
     name: 'MyDashboard',
     components: {
       TimeLineBtn: () => import('@/components/filter/TimeLineBtn'),
       TimeLineExt: () => import('@/components/filter/TimeLineExt'),
-      BtnAddWidget: () => import('@/components/btn/BtnAddWidget'),
-      GridLayout: VueGridLayout.GridLayout,
-      GridItem: VueGridLayout.GridItem,
+      GridManager: () => import('@/components/layout/GridManager'),
     },
     data: () => ({
       loading: true,
+      drawer: false,
       widgets: undefined,
     }),
     computed: {
       ...mapState(['user']),
-      timeRange: {
-        get () {
-          return this.$store.state.myDashboard.timeRange
-        },
-        set (val) {
-          this.$store.commit('SET_TIMERANGE', val)
-        },
-      },
       showTimeExt: {
         get () {
-          return this.$store.state.myDashboard.showTimeExt
-        },
-        set (val) {
-          this.$store.commit('TOGGLE_TIMEEXT', val)
+          return this.$store.state[this.$route.name].showTimeExt
         },
       },
-      layout: {
+      filters: {
         get () {
-          return this.$store.state.myDashboard.layout
+          return Object.assign(
+            {}, this.$store.state[this.$route.name].filters)
         },
-        set (val) {
-          this.$store.commit('SET_LAYOUT', val)
+      },
+      timeRange: {
+        get () {
+          return Object.assign(
+            {}, this.$store.state[this.$route.name].timeRange)
         },
       },
     },
     created () {
-      this.loading = true
       DatasetDashboardApi.getDashboardPage(this.user, 'my_dashboard')
         .then((json) => {
-          if (this.timeRange.end === undefined) {
-            this.timeRange.end = new Date()
-          }
-
-          if (this.timeRange.start === undefined) {
-            this.timeRange.start = new Date(
-              this.timeRange.end.getTime() -
-                json.View.DefaultPeriod * 24 * 60 * 60 * 1000,
-            )
-          }
-
           this.widgets = {}
 
           json.View.Widgets.forEach(wg => {
@@ -198,56 +172,45 @@
         })
         .catch((err) => console.log(err))
     },
+    updated () {},
     methods: {
-      updateTimeRange (val) {
-        this.timeRange[val[0]] = val[1]
+      updateDropdown (key, sel) {
+        for (const f in this.filters[key]) {
+          if (sel.indexOf(f) >= 0) {
+            this.$set(this.filters[key], f, true)
+          } else {
+            this.$set(this.filters[key], f, false)
+          }
+        }
+
+        this.$store.commit('SET_FILTERS', {
+          name: this.$route.name,
+          filters: Object.assign({}, this.filters),
+        })
       },
-      addWidget (val) {
+      addWidget (category, ind) {
         let x = 0
         let y = 0
+        const { last, len } = this.$refs.gridManager.getLayout()
 
-        if (this.layout.length > 0) {
-          x = this.layout[this.layout.length - 1].x
-          y = this.layout[this.layout.length - 1].y + 1
+        if (len > 0) {
+          x = last.x
+          y = last.y + last.w
 
           if (y > 9) {
-            x++
+            x += last.h
             y = 0
           }
         }
 
-        const ind = this.layout.length
-        this.widgets[val[0]].Widgets[val[1]].Hidden = true
-        let vis = this.widgets[val[0]].Widgets[val[1]].JSFile
+        const i = len.toString()
+        this.widgets[category].Widgets[ind].Hidden = true
+        let vis = this.widgets[category].Widgets[ind].JSFile
         vis = vis.substr(0, vis.length - 3)
 
-        this.layout.push({
-          x,
-          y,
-          w: 4,
-          h: 5,
-          category: val[0],
-          ind: val[1],
-          vis: vis,
-          i: ind.toString(),
+        this.$refs.gridManager.addWidget({
+          x, y, w: 6, h: 8, category, ind, vis, i,
         })
-      },
-      removeWidget (i) {
-        this.layout = this.layout.filter(l => {
-          if (l.i === i) {
-            this.widgets[l.category].Widgets[l.ind].Hidden = false
-            return false
-          } else {
-            return true
-          }
-        })
-      },
-      resizedEvent (i) {
-        const item = this.layout.filter(l => l.i === i)[0]
-        const widget = this.widgets[item.category].Widgets[item.ind]
-        const ref = widget.Selector.split('#')[1] +
-          '-widget-' + widget.WidgetId
-        setTimeout(() => this.$refs[ref][0].handleResize(), 400)
       },
     },
   }
@@ -271,6 +234,14 @@
         right: 5px;
         top: 4px;
       }
+    }
+
+    .v-progress-linear {
+      width: 90%;
+      max-width: 180px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
   }
 </style>

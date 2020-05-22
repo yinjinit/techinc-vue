@@ -6,6 +6,7 @@
       :close-on-content-click="false"
       :return-value.sync="dateData"
       offset-y
+      @update:return-value="updateDate"
     >
       <template v-slot:activator="{ on }">
         <v-text-field
@@ -51,6 +52,7 @@
       transition="scale-transition"
       offset-y
       min-width="240px"
+      @update:return-value="updateTime"
     >
       <template v-slot:activator="{ on }">
         <v-text-field
@@ -107,13 +109,15 @@
           return pattern.test(v)
         },
       },
+      dateData: undefined,
+      timeData: undefined,
     }),
     computed: {
       randDateRef () {
-        return 'dateTimePicker-' + Math.random().toString(16).substr(2, 9)
+        return 'datePicker-' + Math.random().toString(16).substr(2, 9)
       },
       randTimeRef () {
-        return 'dateTimePicker-' + Math.random().toString(16).substr(2, 9)
+        return 'timePicker-' + Math.random().toString(16).substr(2, 9)
       },
       minDate () {
         return this.min !== undefined ? this.getDate(this.min) : undefined
@@ -127,28 +131,15 @@
       maxTime () {
         return this.max !== undefined ? this.getTime(this.max) : undefined
       },
-      dateData: {
-        get () {
-          return this.getDate(this.datetime)
-        },
-        set (val) {
-          this.$emit('update:datetime', new Date(val + ' ' + this.timeData))
-        },
-      },
-      timeData: {
-        get () {
-          return this.getTime(this.datetime)
-        },
-        set (val) {
-          this.$emit('update:datetime', new Date(this.dateData + ' ' + val))
-        },
-      },
     },
     mounted () {
       this.dateData = this.getDate(this.datetime)
       this.timeData = this.getTime(this.datetime)
     },
-
+    updated () {
+      this.dateData = this.getDate(this.datetime)
+      this.timeData = this.getTime(this.datetime)
+    },
     methods: {
       getDate (val) {
         return val.getFullYear() +
@@ -158,6 +149,12 @@
       getTime (val) {
         return ('0' + val.getHours()).slice(-2) +
           ':' + ('0' + val.getMinutes()).slice(-2)
+      },
+      updateDate (val) {
+        this.$emit('update:datetime', new Date(val + ' ' + this.timeData))
+      },
+      updateTime (val) {
+        this.$emit('update:datetime', new Date(this.dateData + ' ' + val))
       },
     },
   }

@@ -79,9 +79,9 @@
               to: 'dashboard/live',
             },
             {
-              title: 'slideshow',
-              icon: 'mdi-play-box-outline',
-              to: 'dashboard/slideshow',
+              title: 'Map',
+              icon: 'mdi-map',
+              to: 'dashboard/map',
             },
           ],
         },

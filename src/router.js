@@ -22,6 +22,11 @@ export default new VueRouter({
           path: 'dashboard/live',
           component: () => import('@/views/dashboard/LiveDashboard'),
         },
+        {
+          name: 'Map',
+          path: 'dashboard/map',
+          component: () => import('@/views/dashboard/Map'),
+        },
       ],
     },
     { path: '*', redirect: '/dashboard/live' },

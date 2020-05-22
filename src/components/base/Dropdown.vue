@@ -5,7 +5,7 @@
     offset-y
     allow-overflow
   >
-    <template v-slot:activator="{ on }">
+    <template v-slot:activator="{on}">
       <v-btn
         small
         v-bind="$attrs"
@@ -13,20 +13,21 @@
         v-on="on"
       >
         {{ title + ': ' }}
-        {{ selected.length > 0 ? selected.join(', ') : $t('all') }}
+        {{ selected.length ? selected.join(', ') : $t('all') }}
       </v-btn>
     </template>
     <v-list v-if="menu">
       <v-list-item
-        v-for="(item, i) in items"
+        v-for="(key, i) in Object.keys(items)"
         :key="i"
       >
         <v-checkbox
           v-model="selected"
           dense
-          :label="item.value !== undefined ? item.value : item"
-          :value="item.key !== undefined ? item.key : item"
+          :value="key"
+          :label="key"
           :hide-details="true"
+          @change="toggle"
         />
       </v-list-item>
     </v-list>
@@ -38,10 +39,6 @@
     name: 'Dropdown',
     props: {
       items: {
-        type: Array,
-        default: undefined,
-      },
-      default: {
         type: Object,
         default: undefined,
       },
@@ -58,11 +55,17 @@
       menu: false,
       selected: [],
     }),
-    computed: {
-    },
     mounted () {
+      for (const e in this.items) {
+        if (!(e in this.selected) && this.items[e]) {
+          this.selected.push(e)
+        }
+      }
     },
     methods: {
+      toggle () {
+        this.$emit('update:dropdown', this.selected)
+      },
     },
   }
 </script>
