@@ -26,22 +26,11 @@
 
       <v-divider />
 
-      <gmap-map
-        ref="mapRef"
+      <div
+        ref="gMap"
         v-resize="resize"
-        :center="{lat: 0, lng: 0}"
-        :zoom="7"
-        map-type-id="terrain"
-      >
-        <gmap-marker
-          v-for="(m, i) in locations.filter((e,i)=>i<10)"
-          :key="i"
-          :position="{lat: m.Position[1], lng: m.Position[0]}"
-          :clickable="true"
-          :draggable="true"
-          @click="center={lat: m.Position[1], lng: m.Position[0]}"
-        />
-      </gmap-map>
+        class="mt-4"
+      />
     </fragment>
   </v-container>
 </template>
@@ -49,8 +38,10 @@
 <script>
   import { mapState } from 'vuex'
   import MapApi from '@/services/api/Map'
-  import { gmapApi } from 'vue2-google-maps'
   // import colors from 'vuetify/lib/util/colors'
+  // import styles from '@/services/map/style'
+  import { Loader } from '@googlemaps/js-api-loader'
+  import MarkerClusterer from '@google/markerclustererplus'
 
   export default {
     name: 'Map',
@@ -70,15 +61,14 @@
           this.$store.commit('SET_FILTERS', { filters: val, name })
         },
       },
-      google: gmapApi,
     },
     async mounted () {
       this.locations = await MapApi.allLocationsByUser(this.user)
         .then(json => json)
         .catch(err => err)
-      this.roads = await MapApi.allRoadsByUser(this.user)
-        .then(json => json)
-        .catch(err => err)
+      // this.roads = await MapApi.allRoadsByUser(this.user)
+      //   .then(json => json)
+      //   .catch(err => err)
       const filters = Object.assign({}, this.filters)
       this.locations.forEach(e => {
         for (const f in filters) {
@@ -91,16 +81,81 @@
       this.filters = filters
       this.loading = false
     },
-    updated () {
+    async updated () {
       console.log('updated')
 
-      const bounds = new this.google.maps.LatLngBounds()
-      console.log(bounds)
-      this.locations.forEach(e => {
-        bounds.extend({ lat: e.Position[1], lng: e.Position[0] })
+      if (!window.google) {
+        const loader = new Loader({
+          apiKey: 'AIzaSyCSVxstLlVUrrzSNSbZbp-646V3w8TH6PM',
+          libraries: ['places'],
+        })
+        await loader.load()
+      }
+
+      const google = window.google
+      const bounds = new google.maps.LatLngBounds()
+
+      const markers = this.locations.map((e, i) => {
+        const pos = {
+          lat: e.Position[1],
+          lng: e.Position[0],
+        }
+
+        bounds.extend(pos)
+
+        return new google.maps.Marker({
+          position: pos,
+        })
       })
 
-      this.$refs.mapRef.fitBounds(bounds)
+      const map = new google.maps.Map(this.$refs.gMap, {
+        center: bounds.getCenter(),
+        zoom: 3,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+        gestureHandling: 'cooperative',
+        maxZoom: 20,
+      })
+
+      const cluster = new MarkerClusterer(
+        map, markers, {
+          imagePath: 'https://developers.google.com/maps' +
+            '/documentation/javascript/examples/markerclusterer/m',
+        })
+
+      console.log(cluster.options)
+
+      map.fitBounds(bounds)
+
+      const imgBounds = {
+        12: [[3734, 3735], [2440, 2440]],
+        13: [[7468, 7470], [4880, 4881]],
+        // 14: [[20969, 20970], [50657, 50658]],
+        // 15: [[20969, 20970], [50657, 50658]],
+        // 16: [[20969, 20970], [50657, 50658]],
+        // 17: [[20969, 20970], [50657, 50658]],
+        // 18: [[41939, 41940], [101315, 101317]],
+        // 19: [[83878, 83881], [202631, 202634]],
+        // 20: [[167757, 167763], [405263, 405269]],
+      }
+      var imageMapType = new this.google.maps.ImageMapType({
+        getTileUrl: (coord, zoom) => {
+          if (zoom < 17 || zoom > 20 ||
+            imgBounds[zoom][0][0] > coord.x ||
+            coord.x > imgBounds[zoom][0][1] ||
+            imgBounds[zoom][1][0] > coord.y ||
+            coord.y > imgBounds[zoom][1][1]) {
+            return null
+          }
+
+          return ['//www.gstatic.com/io2010maps/tiles/5/L2_',
+                  zoom, '_', coord.x, '_', coord.y, '.png'].join('')
+        },
+        tileSize: new this.google.maps.Size(256, 256),
+      })
+
+      this.map.overlayMapTypes.push(imageMapType)
     },
     methods: {
       updateDropdown (key, sel) {
@@ -118,13 +173,15 @@
         })
       },
       resize () {
-        console.log('resize')
-        const map = document.querySelector('.vue-map-container')
-        const cont = document.querySelector('main.v-content > .v-content__wrap')
-        const tbar = cont.querySelector('.v-toolbar')
+        const map = this.$refs.gMap
+        const cont = map.parentNode.parentNode.parentNode
+        const tbar = map.previousElementSibling.previousElementSibling
         const hei = cont.getBoundingClientRect().height -
-          tbar.getBoundingClientRect().height - 26
+          tbar.getBoundingClientRect().height - 42
         map.style.height = hei + 'px'
+      },
+      draw () {
+        console.log('bounds changed')
       },
     },
   }
