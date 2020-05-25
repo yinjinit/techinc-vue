@@ -21,12 +21,6 @@ export default new Vuex.Store({
         'Structure Type': {},
       },
     },
-    Map: {
-      filters: {
-        Region: {},
-        Site: {},
-      },
-    },
     notifications: [
       'Mike John Responded to your email',
       'You have 5 new tasks',

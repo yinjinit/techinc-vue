@@ -74,43 +74,9 @@
           children: [
             { title: 'my dashboard', icon: 'mdi-chart-bar', to: 'dashboard' },
             {
-              title: 'live dashboard',
-              icon: 'mdi-antenna',
-              to: 'dashboard/live',
-            },
-            {
               title: 'Map',
               icon: 'mdi-map',
               to: 'dashboard/map',
-            },
-          ],
-        },
-        {
-          title: 'time',
-          icon: 'mdi-clock-outline',
-          group: '',
-          children: [
-            {
-              title: 'reconciliation',
-              icon: 'mdi-scale-balance',
-              to: 'time/reconciliation',
-            },
-            {
-              title: 'downtime stopwatch',
-              icon: 'mdi-alarm',
-              to: 'time/downtime',
-            },
-          ],
-        },
-        {
-          title: 'maintenance',
-          icon: 'mdi-wrench-outline',
-          group: '',
-          children: [
-            {
-              title: 'work request',
-              icon: 'mdi-water',
-              to: 'maintenance/work-request',
             },
           ],
         },
@@ -123,12 +89,6 @@
               title: 'users',
               icon: 'mdi-account-multiple',
               to: 'settings/users',
-            },
-            { title: 'asset', icon: 'mdi-factory', to: 'settings/asset' },
-            {
-              title: 'structure',
-              icon: 'mdi-file-tree',
-              to: 'settings/structure',
             },
           ],
         },

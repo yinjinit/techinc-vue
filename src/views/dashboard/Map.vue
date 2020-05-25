@@ -1,89 +1,80 @@
 <template>
-  <v-container
-    id="dashboard"
-    fluid
-  >
-    <v-skeleton-loader
-      v-if="loading"
-      type="card, article, article"
+  <fragment>
+    <div
+      ref="gMap"
+      style="height: 100%;"
     />
+    <v-dialog
+      v-if="info"
+      v-model="dialog"
+      max-width="290"
+    >
+      <v-card>
+        <v-card-title class="headline">
+          {{ info.Location.split('_').join(' ') }}
+        </v-card-title>
 
-    <fragment v-else>
-      <v-toolbar
-        flat
-        tag="div"
-      >
-        <base-dropdown
-          v-for="(filter, key, i) in filters"
-          :key="i"
-          :items="filter"
-          :disabled="!Object.keys(filter).length"
-          :title="key"
-          class-name="mr-1"
-          @update:dropdown="updateDropdown(key, $event)"
-        />
-      </v-toolbar>
+        <v-card-text>
+          <v-simple-table dense>
+            <template v-slot:default>
+              <tbody>
+                <tr>
+                  <td>Id</td>
+                  <td>{{ info.Id }}</td>
+                </tr>
+                <tr>
+                  <td>Location</td>
+                  <td>{{ info.Location }}</td>
+                </tr>
+                <tr>
+                  <td>Location Type</td>
+                  <td>{{ info.LocationType }}</td>
+                </tr>
+                <tr>
+                  <td>Point Number</td>
+                  <td>{{ info.PointNum }}</td>
+                </tr>
+                <tr>
+                  <td>Elevation</td>
+                  <td>{{ info.Elevation }}</td>
+                </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
+        </v-card-text>
 
-      <v-divider />
+        <v-card-actions>
+          <v-spacer />
 
-      <div
-        ref="gMap"
-        v-resize="resize"
-        class="mt-4"
-      />
-    </fragment>
-  </v-container>
+          <v-btn
+            color="green darken-1"
+            text
+            @click="dialog = false"
+          >
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </fragment>
 </template>
 
 <script>
   import { mapState } from 'vuex'
   import MapApi from '@/services/api/Map'
-  // import colors from 'vuetify/lib/util/colors'
-  // import styles from '@/services/map/style'
   import { Loader } from '@googlemaps/js-api-loader'
   import MarkerClusterer from '@google/markerclustererplus'
 
   export default {
     name: 'Map',
     data: () => ({
-      loading: true,
-      locations: [],
-      roads: [],
+      dialog: false,
+      info: undefined,
     }),
     computed: {
       ...mapState(['user']),
-      filters: {
-        get () {
-          return Object.assign({}, this.$store.state[this.$route.name].filters)
-        },
-        set (val) {
-          const name = this.$route.name
-          this.$store.commit('SET_FILTERS', { filters: val, name })
-        },
-      },
     },
     async mounted () {
-      this.locations = await MapApi.allLocationsByUser(this.user)
-        .then(json => json)
-        .catch(err => err)
-      // this.roads = await MapApi.allRoadsByUser(this.user)
-      //   .then(json => json)
-      //   .catch(err => err)
-      const filters = Object.assign({}, this.filters)
-      this.locations.forEach(e => {
-        for (const f in filters) {
-          if ((f in e) && !(e[f] in filters[f])) {
-            filters[f][e[f]] = false
-          }
-        }
-      })
-
-      this.filters = filters
-      this.loading = false
-    },
-    async updated () {
-      console.log('updated')
-
       if (!window.google) {
         const loader = new Loader({
           apiKey: 'AIzaSyCSVxstLlVUrrzSNSbZbp-646V3w8TH6PM',
@@ -93,24 +84,10 @@
       }
 
       const google = window.google
-      const bounds = new google.maps.LatLngBounds()
-
-      const markers = this.locations.map((e, i) => {
-        const pos = {
-          lat: e.Position[1],
-          lng: e.Position[0],
-        }
-
-        bounds.extend(pos)
-
-        return new google.maps.Marker({
-          position: pos,
-        })
-      })
 
       const map = new google.maps.Map(this.$refs.gMap, {
-        center: bounds.getCenter(),
-        zoom: 3,
+        center: { lat: -32.5887, lng: 148.2219 },
+        zoom: 14,
         mapTypeControl: false,
         streetViewControl: false,
         fullscreenControl: false,
@@ -118,30 +95,53 @@
         maxZoom: 20,
       })
 
+      const locations = await MapApi.allLocationsByUser(this.user)
+
+      const bounds = new google.maps.LatLngBounds()
+
+      const markers = locations.map((e, i) => {
+        const pos = {
+          lat: e.Position[1],
+          lng: e.Position[0],
+        }
+
+        bounds.extend(pos)
+
+        const m = new google.maps.Marker({
+          position: pos,
+          icon: `//${location.host}/img/markers/${e.LocationType}.png`,
+        })
+
+        google.maps.event.addListener(m, 'click', () => {
+          this.dialog = true
+          this.info = e
+        })
+
+        return m
+      })
+
       const cluster = new MarkerClusterer(
         map, markers, {
-          imagePath: 'https://developers.google.com/maps' +
-            '/documentation/javascript/examples/markerclusterer/m',
+          imagePath: `//${location.host}/img/markers/m`,
+          maxZoom: 19,
         })
 
       console.log(cluster.options)
 
-      map.fitBounds(bounds)
-
       const imgBounds = {
-        12: [[3734, 3735], [2440, 2440]],
-        13: [[7468, 7470], [4880, 4881]],
-        // 14: [[20969, 20970], [50657, 50658]],
-        // 15: [[20969, 20970], [50657, 50658]],
-        // 16: [[20969, 20970], [50657, 50658]],
-        // 17: [[20969, 20970], [50657, 50658]],
-        // 18: [[41939, 41940], [101315, 101317]],
-        // 19: [[83878, 83881], [202631, 202634]],
-        // 20: [[167757, 167763], [405263, 405269]],
+        12: [[3734], [2440, 2440]],
+        13: [[7468, 7469], [4880, 4881]],
+        14: [[14936, 14938], [9761, 9762]],
+        15: [[29873, 29877], [19522, 19525]],
+        16: [[59747, 59754], [39045, 39051]],
+        17: [[119495, 119509], [78091, 78103]],
+        18: [[238990, 239019], [156173, 156215]],
+        19: [[477980, 478038], [312346, 312431]],
+        20: [[955961, 956077], [624692, 624862]],
       }
-      var imageMapType = new this.google.maps.ImageMapType({
+      const imgMapType = new google.maps.ImageMapType({
         getTileUrl: (coord, zoom) => {
-          if (zoom < 17 || zoom > 20 ||
+          if (zoom < 12 || zoom > 20 ||
             imgBounds[zoom][0][0] > coord.x ||
             coord.x > imgBounds[zoom][0][1] ||
             imgBounds[zoom][1][0] > coord.y ||
@@ -149,13 +149,19 @@
             return null
           }
 
-          return ['//www.gstatic.com/io2010maps/tiles/5/L2_',
-                  zoom, '_', coord.x, '_', coord.y, '.png'].join('')
+          return `//${location.host}/tiles/${zoom}/${coord.x}/${coord.y}.png`
         },
-        tileSize: new this.google.maps.Size(256, 256),
+        tileSize: new google.maps.Size(256, 256),
       })
+      map.overlayMapTypes.push(imgMapType)
 
-      this.map.overlayMapTypes.push(imageMapType)
+      const roads = await MapApi.allRoadsByUser(this.user)
+
+      const dirRend = new google.maps.DirectionsRenderer()
+      const dirSrv = new google.maps.DirectionsService()
+      dirRend.setMap(map)
+
+      this.calcRoute(dirSrv, dirRend, roads[0])
     },
     methods: {
       updateDropdown (key, sel) {
@@ -172,16 +178,29 @@
           filters: Object.assign({}, this.filters),
         })
       },
-      resize () {
-        const map = this.$refs.gMap
-        const cont = map.parentNode.parentNode.parentNode
-        const tbar = map.previousElementSibling.previousElementSibling
-        const hei = cont.getBoundingClientRect().height -
-          tbar.getBoundingClientRect().height - 42
-        map.style.height = hei + 'px'
-      },
-      draw () {
-        console.log('bounds changed')
+
+      calcRoute (dirSrv, dirRend, road) {
+        dirSrv.route({
+          origin: { lat: road.PointA[1], lng: road.PointA[0] },
+          destination: { lat: road.PointB[1], lng: road.PointB[0] },
+          travelMode: window.google.maps.TravelMode.DRIVING,
+          // waypoints: [
+          //   {
+          //     location: { lat: road.ControlA[1], lng: road.ControlA[0] },
+          //     stopover: true,
+          //   },
+          //   {
+          //     location: { lat: road.ControlB[1], lng: road.ControlB[0] },
+          //     stopover: true,
+          //   },
+          // ],
+        }, (response, status) => {
+          if (status === 'OK') {
+            dirRend.setDirections(response)
+          } else {
+            console.log('Directions request failed due to ' + status)
+          }
+        })
       },
     },
   }

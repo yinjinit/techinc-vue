@@ -49,12 +49,39 @@ mock.onGet(/\/LocationTable\/AllByUser\/\d+/)
   .reply(config => {
     const json = require(
       './json/analysis/LocationTableAllByUser.json')
-    return [200, json]
-  })
+      const resp = []
+      json.forEach(e => {
+        if (!resp.filter(r => r.Position[0] === e.Position[0] &&
+          r.Position[1] === e.Position[1]).length) {
+          resp.push({
+            Id: e.Id,
+            PointNum: e.PointNum,
+            Location: e.Location,
+            LocationType: e.LocationType,
+            Position: e.Position,
+            Elevation: e.Elevation,
+          })
+        }
+      })
+
+      return [200, resp]
+    })
 
 mock.onGet(/\/RoadTable\/AllByUser\/\d+/)
   .reply(config => {
     const json = require(
       './json/analysis/RoadTableAllByUser.json')
-    return [200, json]
+      const resp = []
+      json.forEach(e => {
+        resp.push({
+          Id: e.Id,
+          Distance: e.Distance,
+          ControlA: e.ControlA,
+          ControlB: e.ControlB,
+          PointA: e.PointA,
+          PointB: e.PointB,
+        })
+      })
+
+      return [200, resp]
   })
