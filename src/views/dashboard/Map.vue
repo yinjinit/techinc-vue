@@ -149,7 +149,8 @@
             return null
           }
 
-          return `//${location.host}/tiles/${zoom}/${coord.x}/${coord.y}.png`
+          return 'https://raw.githubusercontent.com/yinjinit/tomingley-tiles/' +
+            `master/${zoom}/${coord.x}/${coord.y}.png`
         },
         tileSize: new google.maps.Size(256, 256),
       })

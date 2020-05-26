@@ -12,7 +12,7 @@
       v-else
       :headers="headers"
       :items="users"
-      sort-by="calories"
+      sort-by="FirstName"
       class="elevation-1"
     >
       <template v-slot:top>
@@ -21,11 +21,6 @@
           color="white"
         >
           <v-toolbar-title>{{ $route.name }}</v-toolbar-title>
-          <v-divider
-            class="mx-4"
-            inset
-            vertical
-          />
           <v-spacer />
           <v-dialog
             v-model="dialog"
@@ -52,51 +47,38 @@
                     <v-col
                       cols="12"
                       sm="6"
-                      md="4"
                     >
                       <v-text-field
-                        v-model="editedItem.name"
-                        label="Dessert name"
+                        v-model="editedUser.FirstName"
+                        label="First Name"
                       />
                     </v-col>
                     <v-col
                       cols="12"
                       sm="6"
-                      md="4"
                     >
                       <v-text-field
-                        v-model="editedItem.calories"
-                        label="Calories"
+                        v-model="editedUser.LastName"
+                        label="Last Name"
                       />
                     </v-col>
                     <v-col
                       cols="12"
                       sm="6"
-                      md="4"
                     >
                       <v-text-field
-                        v-model="editedItem.fat"
-                        label="Fat (g)"
+                        v-model="editedUser.Username"
+                        label="User Name"
+                        :disabled="editedIndex !== -1"
                       />
                     </v-col>
                     <v-col
                       cols="12"
                       sm="6"
-                      md="4"
                     >
                       <v-text-field
-                        v-model="editedItem.carbs"
-                        label="Carbs (g)"
-                      />
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                    >
-                      <v-text-field
-                        v-model="editedItem.protein"
-                        label="Protein (g)"
+                        v-model="editedUser.Email"
+                        label="Email"
                       />
                     </v-col>
                   </v-row>
@@ -128,13 +110,13 @@
         <v-icon
           small
           class="mr-2"
-          @click="editItem(item)"
+          @click="editUser(item)"
         >
           mdi-pencil
         </v-icon>
         <v-icon
           small
-          @click="deleteItem(item)"
+          @click="deleteUser(item)"
         >
           mdi-delete
         </v-icon>
@@ -161,38 +143,34 @@
       dialog: false,
       headers: [
         {
-          text: 'Dessert (100g serving)',
+          text: 'First Name',
           align: 'start',
-          sortable: false,
-          value: 'name',
+          value: 'FirstName',
         },
-        { text: 'Calories', value: 'calories' },
-        { text: 'Fat (g)', value: 'fat' },
-        { text: 'Carbs (g)', value: 'carbs' },
-        { text: 'Protein (g)', value: 'protein' },
+        { text: 'Last Name', value: 'LastName' },
+        { text: 'Email', value: 'Email' },
+        { text: 'User Name', value: 'Username' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
       users: [],
       editedIndex: -1,
-      editedItem: {
-        name: '',
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0,
+      editedUser: {
+        FirstName: '',
+        LastName: '',
+        Email: '',
+        Username: '',
       },
-      defaultItem: {
-        name: '',
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0,
+      defaultUser: {
+        FirstName: '',
+        LastName: '',
+        Email: '',
+        Username: '',
       },
     }),
     computed: {
       ...mapState(['user']),
       formTitle () {
-        return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+        return this.editedIndex === -1 ? 'New User' : 'Edit User'
       },
     },
     watch: {
@@ -208,28 +186,28 @@
         this.users = await UserApi.getAllUsers()
         console.log(this.users)
       },
-      editItem (item) {
-        this.editedIndex = this.users.indexOf(item)
-        this.editedItem = Object.assign({}, item)
+      editUser (usr) {
+        this.editedIndex = this.users.indexOf(usr)
+        this.editedUser = Object.assign({}, usr)
         this.dialog = true
       },
-      deleteItem (item) {
-        const index = this.users.indexOf(item)
-        confirm('Are you sure you want to delete this item?') &&
+      deleteUser (usr) {
+        const index = this.users.indexOf(usr)
+        confirm('Are you sure you want to delete this usr?') &&
           this.users.splice(index, 1)
       },
       close () {
         this.dialog = false
         this.$nextTick(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
+          this.editedUser = Object.assign({}, this.defaultUser)
           this.editedIndex = -1
         })
       },
       save () {
         if (this.editedIndex > -1) {
-          Object.assign(this.users[this.editedIndex], this.editedItem)
+          Object.assign(this.users[this.editedIndex], this.editedUser)
         } else {
-          this.users.push(this.editedItem)
+          this.users.push(this.editedUser)
         }
         this.close()
       },

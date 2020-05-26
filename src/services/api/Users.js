@@ -1,5 +1,3 @@
-import axios from 'axios'
-
 const sha256 = (ascii) => {
   const rightRotate = (value, amount) => {
     return (value >>> amount) | (value << (32 - amount))
@@ -86,56 +84,51 @@ const sha256 = (ascii) => {
 
 export default {
   async getAllUsers () {
-    return await axios
-      .get('/Users')
-      .then(() => {
-        return [
-          {
-            Username: 'test.user@test.com',
-            FirstName: 'Test',
-            LastName: 'User',
-            Email: 'test.user@test.com',
-            Password: sha256('password'),
-          },
-          {
-            Username: 'test.user.no.site@test.com',
-            FirstName: 'Test',
-            LastName: 'User No Site',
-            Email: 'test.user.no.site@test.com',
-            Password: sha256('password'),
-          },
-          {
-            Username: 'test.user.no.region@test.com',
-            FirstName: 'Test',
-            LastName: 'User No Region',
-            Email: 'test.user.no.region@test.com',
-            Password: sha256('password'),
-          },
-          {
-            Username: 'test.user.no.country@test.com',
-            FirstName: 'Test',
-            LastName: 'User No Country',
-            Email: 'test.user.no.country@test.com',
-            Password: sha256('password'),
-          },
-          {
-            Username: 'test.user.powuser@test.com',
-            FirstName: 'Test',
-            LastName: 'User No Country',
-            Email: 'test.user.powuser@test.com',
-            Password: sha256('password'),
-            PowerUser: true,
-          },
-           {
-            Username: 'test.user.beta@test.com',
-            FirstName: 'Test',
-            LastName: 'Beta',
-            Email: 'test.user.beta@test.com',
-            Password: sha256('password'),
-            PowerUser: true,
-          },
-        ]
-      })
-      .catch(err => err)
+    return await [
+      {
+        Username: 'test.user@test.com',
+        FirstName: 'John',
+        LastName: 'Leider',
+        Email: 'test.user@test.com',
+        Password: sha256('password'),
+      },
+      {
+        Username: 'test.user.no.site@test.com',
+        FirstName: 'Test',
+        LastName: 'User No Site',
+        Email: 'test.user.no.site@test.com',
+        Password: sha256('password'),
+      },
+      {
+        Username: 'test.user.no.region@test.com',
+        FirstName: 'Test',
+        LastName: 'User No Region',
+        Email: 'test.user.no.region@test.com',
+        Password: sha256('password'),
+      },
+      {
+        Username: 'test.user.no.country@test.com',
+        FirstName: 'Test',
+        LastName: 'User No Country',
+        Email: 'test.user.no.country@test.com',
+        Password: sha256('password'),
+      },
+      {
+        Username: 'test.user.powuser@test.com',
+        FirstName: 'Test',
+        LastName: 'User No Country',
+        Email: 'test.user.powuser@test.com',
+        Password: sha256('password'),
+        PowerUser: true,
+      },
+        {
+        Username: 'test.user.beta@test.com',
+        FirstName: 'Test',
+        LastName: 'Beta',
+        Email: 'test.user.beta@test.com',
+        Password: sha256('password'),
+        PowerUser: true,
+      },
+    ]
   },
 }

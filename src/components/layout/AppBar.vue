@@ -18,78 +18,6 @@
     <v-spacer />
 
     <v-menu
-      v-model="openFeedback"
-      bottom
-      left
-      offset-y
-      origin="top right"
-      transition="scale-transition"
-      :close-on-content-click="false"
-    >
-      <template v-slot:activator="{ on }">
-        <v-btn
-          fab
-          x-small
-          v-on="on"
-        >
-          <v-icon>mdi-message-alert</v-icon>
-        </v-btn>
-      </template>
-
-      <v-card>
-        <v-card-title class="grey lighten-4 font-weight-bold">
-          {{ $t('feedback') }}
-        </v-card-title>
-
-        <v-divider />
-
-        <v-card-text>
-          <v-form
-            ref="form"
-            v-model="valid"
-          >
-            <v-text-field
-              v-model="subject"
-              :rules="subjectRules"
-              :label="$t('subject')"
-              :placeholder="$t('write your subject')"
-              required
-            />
-
-            <v-text-field
-              v-model="msg"
-              :rules="msgRules"
-              :label="$t('message')"
-              :placeholder="$t('write your message')"
-              required
-            />
-
-            <v-checkbox
-              v-model="snapshot"
-              :label="$t('include a snapshot of the current page')"
-            />
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-
-          <v-btn
-            text
-            @click="reset"
-          >
-            {{ $t('cancel') }}
-          </v-btn>
-          <v-btn
-            color="primary"
-            text
-            @click="submit"
-          >
-            {{ $t('submit') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-menu>
-    <v-menu
       bottom
       left
       offset-y
@@ -249,18 +177,12 @@
   }
 </script>
 
-<style lang="scss">
-  .v-menu__content {
-    .v-card__title {
-      line-height: 1.5;
-      padding: 0 16px;
-      font-size: 0.75rem;
-      height: 40px;
-      color: rgba(0, 0, 0, 0.6);
-    }
+<style scope>
+  .v-menu__content .v-list {
+    padding: 0;
+  }
 
-    .v-subheader {
-      padding: 0 16px;
-    }
+  .v-menu__content .v-subheader {
+    padding: 0 16px;
   }
 </style>
