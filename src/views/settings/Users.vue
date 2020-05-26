@@ -4,181 +4,150 @@
     fluid
   >
     <v-skeleton-loader
-      v-if="loading"
+      v-if="!users.length"
       type="card, article, table-tbody"
     />
 
-    <fragment v-else>
-      <v-toolbar
-        flat
-        tag="div"
-      >
-        <v-toolbar-title>{{ $route.name }}</v-toolbar-title>
-
-        <v-spacer />
-
-        <v-btn
-          small
-          color="primary"
-          class="mr-1"
+    <v-data-table
+      v-else
+      :headers="headers"
+      :items="users"
+      sort-by="calories"
+      class="elevation-1"
+    >
+      <template v-slot:top>
+        <v-toolbar
+          flat
+          color="white"
         >
-          <v-icon left>
-            mdi-file-export
-          </v-icon>
-          <span>{{ $t('export to csv') }}</span>
-        </v-btn>
-        <v-btn
-          small
-          color="primary"
-          @click.stop="drawer = !drawer"
-        >
-          <v-icon left>
-            mdi-plus-thick
-          </v-icon>
-          <span>{{ $t('add widget') }}</span>
-        </v-btn>
-      </v-toolbar>
-
-      <v-data-table
-        :headers="headers"
-        :items="users"
-        sort-by="calories"
-        class="elevation-1"
-      >
-        <template v-slot:top>
-          <v-toolbar
-            flat
-            color="white"
+          <v-toolbar-title>{{ $route.name }}</v-toolbar-title>
+          <v-divider
+            class="mx-4"
+            inset
+            vertical
+          />
+          <v-spacer />
+          <v-dialog
+            v-model="dialog"
+            max-width="500px"
           >
-            <v-toolbar-title>My CRUD</v-toolbar-title>
-            <v-divider
-              class="mx-4"
-              inset
-              vertical
-            />
-            <v-spacer />
-            <v-dialog
-              v-model="dialog"
-              max-width="500px"
-            >
-              <template v-slot:activator="{ on }">
+            <template v-slot:activator="{ on }">
+              <v-btn
+                color="primary"
+                dark
+                class="mb-2"
+                v-on="on"
+              >
+                New User
+              </v-btn>
+            </template>
+            <v-card>
+              <v-card-title>
+                <span class="headline">{{ formTitle }}</span>
+              </v-card-title>
+
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      md="4"
+                    >
+                      <v-text-field
+                        v-model="editedItem.name"
+                        label="Dessert name"
+                      />
+                    </v-col>
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      md="4"
+                    >
+                      <v-text-field
+                        v-model="editedItem.calories"
+                        label="Calories"
+                      />
+                    </v-col>
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      md="4"
+                    >
+                      <v-text-field
+                        v-model="editedItem.fat"
+                        label="Fat (g)"
+                      />
+                    </v-col>
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      md="4"
+                    >
+                      <v-text-field
+                        v-model="editedItem.carbs"
+                        label="Carbs (g)"
+                      />
+                    </v-col>
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      md="4"
+                    >
+                      <v-text-field
+                        v-model="editedItem.protein"
+                        label="Protein (g)"
+                      />
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>
+
+              <v-card-actions>
+                <v-spacer />
                 <v-btn
-                  color="primary"
-                  dark
-                  class="mb-2"
-                  v-on="on"
+                  color="blue darken-1"
+                  text
+                  @click="close"
                 >
-                  New Item
+                  Cancel
                 </v-btn>
-              </template>
-              <v-card>
-                <v-card-title>
-                  <span class="headline">{{ formTitle }}</span>
-                </v-card-title>
-
-                <v-card-text>
-                  <v-container>
-                    <v-row>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                        md="4"
-                      >
-                        <v-text-field
-                          v-model="editedItem.name"
-                          label="Dessert name"
-                        />
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                        md="4"
-                      >
-                        <v-text-field
-                          v-model="editedItem.calories"
-                          label="Calories"
-                        />
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                        md="4"
-                      >
-                        <v-text-field
-                          v-model="editedItem.fat"
-                          label="Fat (g)"
-                        />
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                        md="4"
-                      >
-                        <v-text-field
-                          v-model="editedItem.carbs"
-                          label="Carbs (g)"
-                        />
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                        md="4"
-                      >
-                        <v-text-field
-                          v-model="editedItem.protein"
-                          label="Protein (g)"
-                        />
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
-
-                <v-card-actions>
-                  <v-spacer />
-                  <v-btn
-                    color="blue darken-1"
-                    text
-                    @click="close"
-                  >
-                    Cancel
-                  </v-btn>
-                  <v-btn
-                    color="blue darken-1"
-                    text
-                    @click="save"
-                  >
-                    Save
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </v-toolbar>
-        </template>
-        <template v-slot:item.actions="{ item }">
-          <v-icon
-            small
-            class="mr-2"
-            @click="editItem(item)"
-          >
-            mdi-pencil
-          </v-icon>
-          <v-icon
-            small
-            @click="deleteItem(item)"
-          >
-            mdi-delete
-          </v-icon>
-        </template>
-        <template v-slot:no-data>
-          <v-btn
-            color="primary"
-            @click="initialize"
-          >
-            Reset
-          </v-btn>
-        </template>
-      </v-data-table>
-    </fragment>
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  @click="save"
+                >
+                  Save
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-toolbar>
+      </template>
+      <template v-slot:item.actions="{ item }">
+        <v-icon
+          small
+          class="mr-2"
+          @click="editItem(item)"
+        >
+          mdi-pencil
+        </v-icon>
+        <v-icon
+          small
+          @click="deleteItem(item)"
+        >
+          mdi-delete
+        </v-icon>
+      </template>
+      <template v-slot:no-data>
+        <v-btn
+          color="primary"
+          @click="initialize"
+        >
+          Reset
+        </v-btn>
+      </template>
+    </v-data-table>
   </v-container>
 </template>
 
@@ -189,7 +158,6 @@
   export default {
     name: 'Users',
     data: () => ({
-      loading: true,
       dialog: false,
       headers: [
         {
@@ -232,10 +200,13 @@
         val || this.close()
       },
     },
+    mounted () {
+      this.initialize()
+    },
     methods: {
       async initialize () {
-        this.users = await UserApi.getUsers()
-        this.loading = false
+        this.users = await UserApi.getAllUsers()
+        console.log(this.users)
       },
       editItem (item) {
         this.editedIndex = this.users.indexOf(item)

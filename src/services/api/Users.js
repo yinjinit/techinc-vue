@@ -85,7 +85,7 @@ const sha256 = (ascii) => {
 }
 
 export default {
-  async allUsers () {
+  async getAllUsers () {
     return await axios
       .get('/Users')
       .then(() => {

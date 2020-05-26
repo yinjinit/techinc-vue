@@ -16,13 +16,11 @@ export default new VueRouter({
           name: 'My Dashboard',
           path: '/dashboard',
           component: () => import('@/views/dashboard/MyDashboard'),
-        },
-        {
+        }, {
           name: 'Map',
-          path: '/map',
+          path: '/dashboard/map',
           component: () => import('@/views/dashboard/Map'),
-        },
-        {
+        }, {
           name: 'Users',
           path: '/settings/users',
           component: () => import('@/views/settings/Users'),
