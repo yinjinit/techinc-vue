@@ -75,8 +75,6 @@
       },
     },
     async mounted () {
-      console.log('mounted')
-
       this.cycle = await CycleApi.allByUserDateTimeRange(this.user)
         .then(json => json)
         .catch(err => err)

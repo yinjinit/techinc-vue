@@ -120,15 +120,13 @@
         return m
       })
 
-      const cluster = new MarkerClusterer(
+      let imgBounds = new MarkerClusterer(
         map, markers, {
           imagePath: `//${location.host}/img/markers/m`,
           maxZoom: 19,
         })
 
-      console.log(cluster.options)
-
-      const imgBounds = {
+      imgBounds = {
         12: [[3734], [2440, 2440]],
         13: [[7468, 7469], [4880, 4881]],
         14: [[14936, 14938], [9761, 9762]],
@@ -199,7 +197,7 @@
           if (status === 'OK') {
             dirRend.setDirections(response)
           } else {
-            console.log('Directions request failed due to ' + status)
+            alert('Directions request failed due to ' + status)
           }
         })
       },

@@ -77,56 +77,50 @@
           '-widget-' + this.widget.WidgetId
       },
     },
-    mounted () {
+    async mounted () {
       if (!this.data.length) {
-        CycleTableApi.allByUserDateTimeRange(this.user)
-          .then(json => {
-            const name = this.$route.name
-            const timeRange = Object.assign({}, this.timeRange)
-            const filters = Object.assign({}, this.filters)
-            const dateTimes = []
-            const rangeUndefined = !timeRange.start
-            let timeline
+        const json = await CycleTableApi.allByUserDateTimeRange(this.user)
+        const name = this.$route.name
+        const timeRange = Object.assign({}, this.timeRange)
+        const filters = Object.assign({}, this.filters)
+        const dateTimes = []
+        const rangeUndefined = !timeRange.start
+        let timeline
 
-            json.forEach(e => {
-              for (const f in filters) {
-                if ((f in e) && !(e[f] in filters[f])) {
-                  filters[f][e[f]] = false
-                }
-              }
-
-              const d = new Date(e.DateTime)
-              dateTimes.push({ dateTime: d })
-
-              if (rangeUndefined) {
-                if (d < timeRange.start || !timeRange.start) {
-                  timeRange.start = d
-                }
-                if (d > timeRange.end || !timeRange.end) {
-                  timeRange.end = d
-                }
-              }
-            })
-
-            if (this.$store.state[name].timeline === undefined) {
-              timeline = crossfilter(dateTimes)
-            } else {
-              timeline = this.$store.state[name].timeline
-              timeline.add(dateTimes)
+        json.forEach(e => {
+          for (const f in filters) {
+            if ((f in e) && !(e[f] in filters[f])) {
+              filters[f][e[f]] = false
             }
+          }
 
-            this.data = json
+          const d = new Date(e.DateTime)
+          dateTimes.push({ dateTime: d })
 
-            this.$store.commit('SET_FILTERS', {
-              filters, timeline, timeRange, name,
-            })
+          if (rangeUndefined) {
+            if (d < timeRange.start || !timeRange.start) {
+              timeRange.start = d
+            }
+            if (d > timeRange.end || !timeRange.end) {
+              timeRange.end = d
+            }
+          }
+        })
 
-            this.loading = false
-          })
-          .catch((err) => {
-            this.error = true
-            console.log(err)
-          })
+        if (this.$store.state[name].timeline === undefined) {
+          timeline = crossfilter(dateTimes)
+        } else {
+          timeline = this.$store.state[name].timeline
+          timeline.add(dateTimes)
+        }
+
+        this.data = json
+
+        this.$store.commit('SET_FILTERS', {
+          filters, timeline, timeRange, name,
+        })
+
+        this.loading = false
       }
     },
     updated () {

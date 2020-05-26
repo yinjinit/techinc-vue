@@ -146,31 +146,29 @@
         },
       },
     },
-    created () {
-      DatasetDashboardApi.getDashboardPage(this.user, 'my_dashboard')
-        .then((json) => {
-          this.widgets = {}
+    async created () {
+      const json = await DatasetDashboardApi
+        .getDashboardPage(this.user, 'my_dashboard')
+      this.widgets = {}
 
-          json.View.Widgets.forEach(wg => {
-            let key = 'other'
+      json.View.Widgets.forEach(wg => {
+        let key = 'other'
 
-            if (wg.Category) {
-              key = wg.Category.Id
-            }
+        if (wg.Category) {
+          key = wg.Category.Id
+        }
 
-            if (!(key in this.widgets)) {
-              this.widgets[key] = wg.Category ? wg.Category : {
-                Description: 'Other',
-              }
-              this.widgets[key].Widgets = []
-            }
+        if (!(key in this.widgets)) {
+          this.widgets[key] = wg.Category ? wg.Category : {
+            Description: 'Other',
+          }
+          this.widgets[key].Widgets = []
+        }
 
-            this.widgets[key].Widgets.push({ ...wg.Configuration })
-          })
+        this.widgets[key].Widgets.push({ ...wg.Configuration })
+      })
 
-          this.loading = false
-        })
-        .catch((err) => console.log(err))
+      this.loading = false
     },
     updated () {},
     methods: {

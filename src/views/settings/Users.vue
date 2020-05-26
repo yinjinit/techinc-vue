@@ -184,7 +184,6 @@
     methods: {
       async initialize () {
         this.users = await UserApi.getAllUsers()
-        console.log(this.users)
       },
       editUser (usr) {
         this.editedIndex = this.users.indexOf(usr)

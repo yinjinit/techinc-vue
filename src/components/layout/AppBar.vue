@@ -76,7 +76,7 @@
           v-on="on"
         >
           <v-icon>mdi-account</v-icon>
-          <span>John Leider: No Country</span>
+          <span>John Leider</span>
         </v-btn>
       </template>
       <v-list
