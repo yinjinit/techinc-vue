@@ -9,23 +9,22 @@ export default new VueRouter({
   routes: [
     {
       name: 'Index',
-      path: '/dashboard',
-      component: () => import('@/views/dashboard/MyDashboard'),
+      path: '/',
+      component: () => import('@/views/Index'),
       children: [
+        {
+          name: 'My Dashboard',
+          path: '/dashboard',
+          component: () => import('@/views/dashboard/MyDashboard'),
+        },
         {
           name: 'Map',
           path: '/map',
           component: () => import('@/views/dashboard/Map'),
         },
-      ],
-    },
-    {
-      name: 'Settings',
-      path: '/settings',
-      children: [
         {
           name: 'Users',
-          path: 'users',
+          path: '/settings/users',
           component: () => import('@/views/settings/Users'),
         },
       ],

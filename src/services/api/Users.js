@@ -46,7 +46,6 @@ const sha256 = (ascii) => {
     hash = hash.slice(0, 8)
 
     for (i = 0; i < 64; i++) {
-      var i2 = i + j
       var w15 = w[i - 15]; var w2 = w[i - 2]
 
       // Iterate

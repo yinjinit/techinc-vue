@@ -5,7 +5,7 @@
   >
     <v-skeleton-loader
       v-if="loading"
-      type="card, article, article, table-tbody"
+      type="card, article, table-tbody"
     />
 
     <fragment v-else>
