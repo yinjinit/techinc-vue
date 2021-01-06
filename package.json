@@ -11,7 +11,7 @@
   "dependencies": {
     "@google/markerclustererplus": "^5.0.3",
     "@googlemaps/js-api-loader": "^1.0.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "axios-mock-adapter": "^1.18.1",
     "core-js": "^3.6.4",
     "crossfilter2": "^1.5.2",
